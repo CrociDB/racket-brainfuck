@@ -20,12 +20,13 @@
 (define (valid-instructions c) (string-contains? "<>+-[],." c))
 
 (define (run-instruction i ctx) 
-    (printf "Interpreting ~a\n" i)
     (cond
         [(string=? i ">") (cell-next ctx)]
         [(string=? i "<") (cell-prev ctx)]
         [(string=? i "+") (cell-modify ctx (lambda (x) (+ x 1)))]
-        [(string=? i "-") (cell-modify ctx (lambda (x) (- x 1)))]))
+        [(string=? i "-") (cell-modify ctx (lambda (x) (- x 1)))]
+        [(string=? i ",") (cell-modify ctx (lambda (_) (read-byte)))]
+        [(string=? i ".") (cell-modify ctx (lambda (x) (printf "~a" (bytes->string/utf-8 (bytes x))) x))]))
 
 (define (cell-next ctx) (list (car ctx) (+ (car (cdr ctx)) 1)))
 (define (cell-prev ctx) (list (car ctx) (- (car (cdr ctx)) 1)))
