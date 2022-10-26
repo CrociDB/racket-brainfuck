@@ -6,16 +6,17 @@
 
 (define (new-context x) (list (make-vector x) 0))
 
-(define (run-program code ctx) 
+(define (run-program code ctx count) 
     (cond 
         [(non-empty-string? code) 
             (define c (substring code 0 1))
             (define ode (substring code 1 (string-length code)))
             (cond 
                 [(valid-instructions c)
-                 (run-program ode (run-instruction c ctx))]
-                [else ctx])]
-        [else ctx]))
+                    (define new_count (+ count 1))
+                    (run-program ode (run-instruction c ctx) new_count)]
+                [else (values ctx count)])]
+        [else (values ctx count)]))
 
 (define (valid-instructions c) (string-contains? "<>+-[],." c))
 
