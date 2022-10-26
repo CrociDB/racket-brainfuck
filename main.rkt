@@ -11,11 +11,11 @@
         [(non-empty-string? code) 
             (define c (substring code 0 1))
             (define ode (substring code 1 (string-length code)))
-            (cond 
-                [(valid-instructions c)
-                    (define new_count (+ count 1))
-                    (run-program ode (run-instruction c ctx) new_count)]
-                [else (values ctx count)])]
+            (define-values (new_ctx new_count) 
+                (if (valid-instructions c) 
+                        (values (run-instruction c ctx) (+ count 1))
+                        (values ctx count)))
+            (run-program ode new_ctx new_count)]
         [else (values ctx count)]))
 
 (define (valid-instructions c) (string-contains? "<>+-[],." c))
