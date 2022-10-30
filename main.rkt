@@ -11,14 +11,31 @@
         [(non-empty-string? code) 
             (define c (substring code 0 1))
             (define ode (substring code 1 (string-length code)))
-            (define-values (new_ctx new_count) 
-                (if (valid-instructions c) 
-                        (values (run-instruction c ctx) (+ count 1))
-                        (values ctx count)))
-            (run-program ode new_ctx new_count)]
+
+            (cond 
+                [(string=? c "]") (values ctx (+ count 1))]
+                [(string=? c "[")
+                    (define-values (iter_ctx iter_count) (run-program ode ctx 0))
+                    
+                    (define new_c (substring ode (- iter_count 1) iter_count))
+                    (define new_ode (substring ode iter_count (string-length ode)))
+
+                    (define-values (new_ctx new_count) 
+                        (if (valid-instructions new_c) 
+                            (values (run-instruction new_c iter_ctx) (+ count iter_count 1))
+                            (values iter_ctx (+ count iter_count 1))))
+                    
+                    (run-program new_ode new_ctx new_count)]
+                [else
+                    (define-values (new_ctx new_count) 
+                        (if (valid-instructions c) 
+                            (values (run-instruction c ctx) (+ count 1))
+                            (values ctx count)))
+                    
+                    (run-program ode new_ctx new_count)])]
         [else (values ctx count)]))
 
-(define (valid-instructions c) (string-contains? "<>+-[],." c))
+(define (valid-instructions c) (string-contains? "<>+-,." c))
 
 (define (run-instruction i ctx) 
     (cond
