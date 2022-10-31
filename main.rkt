@@ -6,7 +6,10 @@
 
 (define (new-context x) (list (make-vector x) 0))
 
-(define (run-program code ctx count) 
+(define (run-program code ctx) 
+    (-run-program code ctx 0))
+
+(define (-run-program code ctx count) 
     (cond 
         [(non-empty-string? code) 
             (define c (substring code 0 1))
@@ -15,24 +18,17 @@
             (cond 
                 [(string=? c "]") (values ctx (+ count 1))]
                 [(string=? c "[")
-                    (define-values (iter_ctx iter_count) (run-program ode ctx 0))
-                    
-                    (define new_c (substring ode (- iter_count 1) iter_count))
+                    (define-values (iter_ctx iter_count) (-run-program ode ctx 0))
                     (define new_ode (substring ode iter_count (string-length ode)))
-
-                    (define-values (new_ctx new_count) 
-                        (if (valid-instructions new_c) 
-                            (values (run-instruction new_c iter_ctx) (+ count iter_count 1))
-                            (values iter_ctx (+ count iter_count 1))))
                     
-                    (run-program new_ode new_ctx new_count)]
+                    (-run-program new_ode iter_ctx (+ 1 count iter_count))]
                 [else
                     (define-values (new_ctx new_count) 
                         (if (valid-instructions c) 
                             (values (run-instruction c ctx) (+ count 1))
                             (values ctx count)))
                     
-                    (run-program ode new_ctx new_count)])]
+                    (-run-program ode new_ctx new_count)])]
         [else (values ctx count)]))
 
 (define (valid-instructions c) (string-contains? "<>+-,." c))
