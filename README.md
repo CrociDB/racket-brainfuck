@@ -10,6 +10,8 @@ There are a few examples inside the `examples/` dir, and it can be run as:
 $ racket main.rkt examples/helloworld.bf
 ```
 
+**Note**: I don't claim authorship on any of the examples. They were scrapped from internet.
+
 ## Command Line Parameters
 
 Additionally to the path of the file to execute, you can also set the number of cells available for the interpreter. The default value is 100.
