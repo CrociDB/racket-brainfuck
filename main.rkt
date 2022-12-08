@@ -1,6 +1,8 @@
 #lang racket
 
-(define hello-world "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.")
+(require racket/cmdline)
+
+; Brainfuck Implementation
 
 (define (new-context x) (list (make-vector x) 0))
 
@@ -77,3 +79,20 @@
 
 (define (cell-zero ctx)
     (= 0 (vector-ref (car ctx) (car (cdr ctx)))))
+
+; Command Line and Execution
+
+(define num-cells 100)
+
+(define file-to-compile
+  (command-line
+   #:program "brainfuck interpreter"
+   #:once-any
+   [("-c" "--num-cells") c
+                         "set the number of cells. the default is 100"
+                         (set! num-cells (string->number c))]
+   #:args (filename)
+   filename))
+
+(define code (file->string file-to-compile))
+(define-values (context _) (run-program code (new-context num-cells)))
