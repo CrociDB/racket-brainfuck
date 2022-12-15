@@ -84,7 +84,7 @@
 
 (define num-cells 100)
 
-(define file-to-compile
+(define file-to-run
   (command-line
    #:program "brainfuck interpreter"
    #:once-any
@@ -94,5 +94,5 @@
    #:args (filename)
    filename))
 
-(define code (file->string file-to-compile))
+(define code (file->string file-to-run))
 (define-values (context _) (run-program code (new-context num-cells)))
